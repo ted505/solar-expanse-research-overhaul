@@ -105,7 +105,16 @@ function Invoke-ScalingScript {
         $args += "-WriteOverrideYaml"
     }
 
-    $process = Start-Process -FilePath "powershell" -ArgumentList $args -NoNewWindow -Wait -PassThru
+    $quotedArgs = ($args | ForEach-Object {
+        $arg = [string]$_
+        if ($arg -match '[\s"]') {
+            '"' + $arg.Replace('"', '\"') + '"'
+        } else {
+            $arg
+        }
+    }) -join " "
+
+    $process = Start-Process -FilePath "powershell" -ArgumentList $quotedArgs -NoNewWindow -Wait -PassThru
     if ($process.ExitCode -ne 0) {
         throw "Scaling script failed with exit code $($process.ExitCode)."
     }
