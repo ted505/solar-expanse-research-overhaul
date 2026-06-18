@@ -27,6 +27,7 @@ internal sealed class ResearchCategoryConfig
 
 internal sealed class ResearchConfig
 {
+    public double? BaseResearchPointPerMonth { get; set; }
     public double UniversalLabResearchPointPerMonth { get; set; } = 100.0;
     public double ResearchBonusDiminishingStartPercent { get; set; } = 50.0;
     public double ResearchBonusSoftCapPercent { get; set; } = 100.0;
@@ -109,7 +110,9 @@ internal sealed class ResearchConfig
         }
 
         config.BuildLookups();
-        log.LogInfo("[ResearchConfig] Loaded: universalLabResearchPointPerMonth="
+        log.LogInfo("[ResearchConfig] Loaded: baseResearchPointPerMonth="
+            + (config.BaseResearchPointPerMonth.HasValue ? config.BaseResearchPointPerMonth.Value.ToString() : "game")
+            + ", universalLabResearchPointPerMonth="
             + config.UniversalLabResearchPointPerMonth
             + ", categories="
             + config.ResearchCategories.Length

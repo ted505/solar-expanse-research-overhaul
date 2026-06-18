@@ -47,6 +47,9 @@ internal static class ResearchLabMath
 
     public static float GetBaseResearchPointPerHour(ResearchManager researchManager)
     {
+        if (Config.BaseResearchPointPerMonth.HasValue)
+            return (float)Config.BaseResearchPointPerMonth.Value;
+
         var company = GetCompany(researchManager);
         var rate = ResearchPoint1PerHourField != null ? (float)(int)ResearchPoint1PerHourField.GetValue(researchManager) : 100f;
         var bonus = company != null ? company.BonusController.GetBonus(EBonus.ResearchProduction) : 1f;
