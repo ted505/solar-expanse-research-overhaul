@@ -9,6 +9,14 @@ Use the balancing script to prototype prerequisite-depth-based research cost sca
 powershell -ExecutionPolicy Bypass -File .\tools\research-cost-scaling.ps1 -WriteOverrideYaml
 ```
 
+Or launch the small GUI:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\research-cost-scaling-gui.ps1
+```
+
+The GUI lets you change `pivotMonths`, `exponent`, `maxMultiplier`, base RP/month, and target research ID, preview the target queue, then generate `research-cost-overrides.yaml`. If the install checkbox is enabled, it also copies that generated override to Teddit's existing `ResearchFacilities\research.yaml` mod file.
+
 The script writes local scratch files under `research-scaling-output/`:
 
 - `research-cost-scaling-report.csv`: all research entries with vanilla cost, prerequisite depth, multiplier, and scaled cost.
