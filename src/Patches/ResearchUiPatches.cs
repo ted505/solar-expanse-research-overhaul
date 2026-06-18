@@ -151,16 +151,19 @@ internal static class ResearchUiPatches
             return;
         }
 
-        var rate = (double)groundFacility.labData.bonusToResearchInPerHour;
+        var entry = ResearchLabMath.GetFacilityEntry(groundFacility);
+        var rate = entry?.BonusPercent ?? (double)groundFacility.labData.bonusToResearchInPerHour;
         if (facility != null)
             rate *= facility.FinalEfficiencyBasedOnPowerDeliveryAndWorkforceAllocationAndResources * facility.Enabled;
 
-        var ids = groundFacility.labData.idToBonus ?? Array.Empty<string>();
-        var isUniversal = (ids.Length == 0 && string.IsNullOrWhiteSpace(groundFacility.labData.idResearchSubType)) || Array.IndexOf(ids, "All") >= 0;
-        __result.Add(new ValueTuple<string, string>("Research output", "+" + ResearchLabMath.UniversalLabResearchPointPerMonth.ToPostfixString("{0}{1}", gray: false, intFormat: true) + " RP/month"));
+        var ids = entry?.ResearchIds ?? groundFacility.labData.idToBonus ?? Array.Empty<string>();
+        var hasConfiguredSubTypes = entry?.ResearchSubTypes != null && entry.ResearchSubTypes.Length > 0;
+        var isUniversal = (ids.Length == 0 && !hasConfiguredSubTypes && string.IsNullOrWhiteSpace(groundFacility.labData.idResearchSubType)) || Array.IndexOf(ids, "All") >= 0;
+        var output = entry?.UniversalResearchPointPerMonth ?? ResearchLabMath.UniversalLabResearchPointPerMonth;
+        __result.Add(new ValueTuple<string, string>("Research output", "+" + ((float)output).ToPostfixString("{0}{1}", gray: false, intFormat: true) + " RP/month"));
         if (!isUniversal)
             __result.Add(new ValueTuple<string, string>("Research bonus", "+" + ((float)rate).ToString("0.#") + "%"));
-        __result.Add(new ValueTuple<string, string>("Research category", ResearchLabMath.GetLabCategoryText(groundFacility.labData)));
+        __result.Add(new ValueTuple<string, string>("Research category", ResearchLabMath.GetLabCategoryText(groundFacility)));
     }
 
     private static string BuildResearchTooltip(ResearchManager researchManager, ResearchDefinition current)

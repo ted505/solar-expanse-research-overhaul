@@ -1,0 +1,94 @@
+# Research Overhaul Configuration
+#
+# universalLabResearchPointPerMonth: flat monthly RP output for lab facilities
+# researchBonusDiminishingStartPercent: raw category bonus where diminishing returns begin
+# researchBonusSoftCapPercent: soft cap approached by diminishing returns
+#
+# categories: research category display groups and the sub-branches each group covers
+#
+# facilities: overrides per facility descriptor ID
+#   universalResearchPointPerMonth: flat monthly RP output for this facility
+#   bonusPercent: category/scope bonus percent for this facility
+#   researchIds: research definition IDs this facility boosts
+#   researchSubTypes: research sub-branch IDs this facility boosts
+#   blockOnEarth: true prevents this facility from being placed on Earth
+#
+# Omitted per-facility values fall back to the game's LabData, then to the
+# global universalLabResearchPointPerMonth for flat output.
+
+universalLabResearchPointPerMonth: 100
+
+researchBonusDiminishingStartPercent: 50
+researchBonusSoftCapPercent: 100
+
+categories:
+  - name: Life Science
+    hexColor: 48F0A8
+    subTypes:
+      - SubBranch_Terraforming
+      - SubBranch_Exploration
+      - SubBranch_Agriculture
+      - SubBranch_Colonization
+      - SubBranch_LifeSupport
+      - SubBranch_Biotech
+
+  - name: Industrial
+    hexColor: F4B24A
+    subTypes:
+      - SubBranch_Mining
+      - SubBranch_Material
+      - SubBranch_Computing
+      - SubBranch_Chemical
+
+  - name: Spaceflight
+    hexColor: 6CB6FF
+    subTypes:
+      - SubBranch_LaunchVehicle
+      - SubBranch_Spacecraft
+      - SubBranch_LaunchFacility
+      - SubBranch_Electroprop
+
+  - name: Power
+    hexColor: FFD84D
+    subTypes:
+      - SubBranch_Fusion
+      - SubBranch_Electromagnetism
+      - SubBranch_Nuclear
+      - SubBranch_Power
+
+facilities:
+
+  # Specialized research facilities
+  rf_life_science_facility:
+    blockOnEarth: true
+    researchSubTypes:
+      - SubBranch_Terraforming
+      - SubBranch_Exploration
+      - SubBranch_Agriculture
+      - SubBranch_Colonization
+      - SubBranch_LifeSupport
+      - SubBranch_Biotech
+
+  rf_industrial_research_facility:
+    blockOnEarth: true
+    researchSubTypes:
+      - SubBranch_Mining
+      - SubBranch_Material
+      - SubBranch_Computing
+      - SubBranch_Chemical
+
+  rf_spaceflight_research_facility:
+    blockOnEarth: true
+    researchSubTypes:
+      - SubBranch_LaunchVehicle
+      - SubBranch_Spacecraft
+      - SubBranch_LaunchFacility
+      - SubBranch_Electroprop
+
+  rf_power_research_facility:
+    blockOnEarth: true
+    researchSubTypes:
+      - SubBranch_Fusion
+      - SubBranch_Electromagnetism
+      - SubBranch_Nuclear
+      - SubBranch_Power

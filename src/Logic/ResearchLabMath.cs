@@ -37,19 +37,13 @@ internal static class ResearchLabMath
     public const float HoursPerDay = 24f;
     public const float DaysPerMonth = 30f;
     public const float HoursPerMonth = 720f;
-    public const float UniversalLabResearchPointPerMonth = 100f;
-    public const float ResearchBonusDiminishingStartPercent = 50f;
-    public const float ResearchBonusSoftCapPercent = 100f;
 
     private static readonly FieldInfo ResearchPoint1PerHourField = AccessTools.Field(typeof(ResearchManager), "researchPoint1PerHour");
     private static readonly FieldInfo BonusFromObservatoryField = AccessTools.Field(typeof(ResearchManager), "bonusFromObservatory");
-    public static readonly ResearchCategoryInfo[] ResearchCategories =
-    {
-        new ResearchCategoryInfo("Life Science", "48F0A8", new Color32(72, 240, 168, 255), "SubBranch_Terraforming", "SubBranch_Exploration", "SubBranch_Agriculture", "SubBranch_Colonization", "SubBranch_LifeSupport", "SubBranch_Biotech"),
-        new ResearchCategoryInfo("Industrial", "F4B24A", new Color32(244, 178, 74, 255), "SubBranch_Mining", "SubBranch_Material", "SubBranch_Computing", "SubBranch_Chemical"),
-        new ResearchCategoryInfo("Spaceflight", "6CB6FF", new Color32(108, 182, 255, 255), "SubBranch_LaunchVehicle", "SubBranch_Spacecraft", "SubBranch_LaunchFacility", "SubBranch_Electroprop"),
-        new ResearchCategoryInfo("Power", "FFD84D", new Color32(255, 216, 77, 255), "SubBranch_Fusion", "SubBranch_Electromagnetism", "SubBranch_Nuclear", "SubBranch_Power"),
-    };
+    public static ResearchCategoryInfo[] ResearchCategories => Config.ResearchCategories;
+    public static float UniversalLabResearchPointPerMonth => (float)Config.UniversalLabResearchPointPerMonth;
+
+    private static ResearchConfig Config => Plugin.ResearchOverhaulConfig ?? ResearchConfig.CreateDefault();
 
     public static float GetBaseResearchPointPerHour(ResearchManager researchManager)
     {
@@ -182,15 +176,16 @@ internal static class ResearchLabMath
         if (labData == null)
             return 0.0;
 
-        var ids = labData.idToBonus ?? Array.Empty<string>();
+        var entry = GetFacilityEntry(lab);
+        var ids = entry?.ResearchIds ?? labData.idToBonus ?? Array.Empty<string>();
         foreach (var id in ids)
         {
             if (rd.ID == id)
-                return LabBonusPercentForMatchingLab(lab, labData);
+                return LabBonusPercentForMatchingLab(lab, labData, entry);
         }
 
-        if (MatchesResearchSubType(labData.idResearchSubType, rd))
-            return LabBonusPercentForMatchingLab(lab, labData);
+        if (MatchesResearchSubType(entry?.ResearchSubTypes, labData.idResearchSubType, rd))
+            return LabBonusPercentForMatchingLab(lab, labData, entry);
 
         return 0.0;
     }
@@ -279,20 +274,32 @@ internal static class ResearchLabMath
 
     public static string GetLabCategoryText(LabData labData)
     {
+        return GetLabCategoryText(labData, null);
+    }
+
+    public static string GetLabCategoryText(GroundFacilityDescriptor groundFacility)
+    {
+        return GetLabCategoryText(groundFacility?.labData, GetFacilityEntry(groundFacility));
+    }
+
+    private static string GetLabCategoryText(LabData labData, FacilityResearchEntry entry)
+    {
         if (labData == null)
             return "";
 
-        if ((labData.idToBonus == null || labData.idToBonus.Length == 0) && string.IsNullOrWhiteSpace(labData.idResearchSubType))
+        var researchIds = entry?.ResearchIds ?? labData.idToBonus;
+        var hasConfiguredSubTypes = entry?.ResearchSubTypes != null && entry.ResearchSubTypes.Length > 0;
+        if ((researchIds == null || researchIds.Length == 0) && !hasConfiguredSubTypes && string.IsNullOrWhiteSpace(labData.idResearchSubType))
             return "All research";
 
-        if (labData.idToBonus != null && Array.IndexOf(labData.idToBonus, "All") >= 0)
+        if (researchIds != null && Array.IndexOf(researchIds, "All") >= 0)
             return "All research";
 
         var labels = new List<string>();
         foreach (var category in ResearchCategories)
         {
             var matches = false;
-            foreach (var id in SplitResearchSubTypeIds(labData.idResearchSubType))
+            foreach (var id in GetResearchSubTypeIds(entry, labData))
             {
                 if (CategoryContainsSubType(category, id))
                 {
@@ -301,9 +308,9 @@ internal static class ResearchLabMath
                 }
             }
 
-            if (!matches && labData.idToBonus != null)
+            if (!matches && researchIds != null)
             {
-                foreach (var id in labData.idToBonus)
+                foreach (var id in researchIds)
                 {
                     var rd = SerializedMonoBehaviourSingleton<AllScriptableObjectManager>.Instance.AllResearchDefinition.GetByID(id);
                     if (rd?.ResearchSubType != null && CategoryContainsSubType(category, rd.ResearchSubType.ID))
@@ -334,6 +341,19 @@ internal static class ResearchLabMath
         return false;
     }
 
+    private static bool MatchesResearchSubType(string[] configuredResearchSubTypeIds, string researchSubTypeIds, ResearchDefinition rd)
+    {
+        if (rd?.ResearchSubType == null)
+            return false;
+
+        foreach (var id in GetResearchSubTypeIds(configuredResearchSubTypeIds, researchSubTypeIds))
+        {
+            if (id == rd.ResearchSubType.ID)
+                return true;
+        }
+        return false;
+    }
+
     private static double GetLabBonusPercentForCategory(LabFacility lab, ResearchCategoryInfo category)
     {
         if (lab == null || category == null || !lab.BuildingWorking)
@@ -344,18 +364,19 @@ internal static class ResearchLabMath
         if (labData == null)
             return 0.0;
 
-        var ids = labData.idToBonus ?? Array.Empty<string>();
+        var entry = GetFacilityEntry(lab);
+        var ids = entry?.ResearchIds ?? labData.idToBonus ?? Array.Empty<string>();
         foreach (var id in ids)
         {
             var rd = SerializedMonoBehaviourSingleton<AllScriptableObjectManager>.Instance.AllResearchDefinition.GetByID(id);
             if (rd?.ResearchSubType != null && CategoryContainsSubType(category, rd.ResearchSubType.ID))
-                return LabBonusPercentForMatchingLab(lab, labData);
+                return LabBonusPercentForMatchingLab(lab, labData, entry);
         }
 
-        foreach (var id in SplitResearchSubTypeIds(labData.idResearchSubType))
+        foreach (var id in GetResearchSubTypeIds(entry, labData))
         {
             if (CategoryContainsSubType(category, id))
-                return LabBonusPercentForMatchingLab(lab, labData);
+                return LabBonusPercentForMatchingLab(lab, labData, entry);
         }
 
         return 0.0;
@@ -389,17 +410,22 @@ internal static class ResearchLabMath
 
     private static float ApplyDiminishingResearchBonus(float rawPercent)
     {
-        if (rawPercent <= ResearchBonusDiminishingStartPercent)
+        var startPercent = (float)Config.ResearchBonusDiminishingStartPercent;
+        var softCapPercent = (float)Config.ResearchBonusSoftCapPercent;
+        if (rawPercent <= startPercent)
             return rawPercent;
 
-        var excess = rawPercent - ResearchBonusDiminishingStartPercent;
-        var remainingRoom = ResearchBonusSoftCapPercent - ResearchBonusDiminishingStartPercent;
-        return ResearchBonusDiminishingStartPercent + remainingRoom * excess / (excess + remainingRoom);
+        var excess = rawPercent - startPercent;
+        var remainingRoom = softCapPercent - startPercent;
+        if (remainingRoom <= 0f)
+            return softCapPercent;
+        return startPercent + remainingRoom * excess / (excess + remainingRoom);
     }
 
-    private static double LabBonusPercentForMatchingLab(LabFacility lab, LabData labData)
+    private static double LabBonusPercentForMatchingLab(LabFacility lab, LabData labData, FacilityResearchEntry entry)
     {
-        return labData.bonusToResearchInPerHour * lab.FinalEfficiencyBasedOnPowerDeliveryAndWorkforceAllocationAndResources * lab.Enabled;
+        var bonusPercent = entry?.BonusPercent ?? labData.bonusToResearchInPerHour;
+        return bonusPercent * lab.FinalEfficiencyBasedOnPowerDeliveryAndWorkforceAllocationAndResources * lab.Enabled;
     }
 
     private static double GetUniversalFlatLabOutput(LabFacility lab)
@@ -412,7 +438,43 @@ internal static class ResearchLabMath
         if (labData == null)
             return 0.0;
 
-        return UniversalLabResearchPointPerMonth * lab.FinalEfficiencyBasedOnPowerDeliveryAndWorkforceAllocationAndResources * lab.Enabled;
+        var entry = GetFacilityEntry(groundFacility);
+        var output = entry?.UniversalResearchPointPerMonth ?? UniversalLabResearchPointPerMonth;
+        return output * lab.FinalEfficiencyBasedOnPowerDeliveryAndWorkforceAllocationAndResources * lab.Enabled;
+    }
+
+    public static FacilityResearchEntry GetFacilityEntry(GroundFacilityDescriptor groundFacility)
+    {
+        if (groundFacility == null)
+            return null;
+
+        return Config.TryGetFacility(groundFacility.ID, out var entry) ? entry : null;
+    }
+
+    public static FacilityResearchEntry GetFacilityEntry(LabFacility lab)
+    {
+        return GetFacilityEntry(lab?.facilityDescriptor as GroundFacilityDescriptor);
+    }
+
+    public static IEnumerable<string> GetResearchSubTypeIds(FacilityResearchEntry entry, LabData labData)
+    {
+        return GetResearchSubTypeIds(entry?.ResearchSubTypes, labData?.idResearchSubType);
+    }
+
+    private static IEnumerable<string> GetResearchSubTypeIds(string[] configuredResearchSubTypeIds, string researchSubTypeIds)
+    {
+        if (configuredResearchSubTypeIds != null)
+        {
+            foreach (var id in configuredResearchSubTypeIds)
+            {
+                if (!string.IsNullOrWhiteSpace(id))
+                    yield return id.Trim();
+            }
+            yield break;
+        }
+
+        foreach (var id in SplitResearchSubTypeIds(researchSubTypeIds))
+            yield return id;
     }
 
     public static void RepairLabFacilityCache(Company company)

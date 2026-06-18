@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\parft\\Documents\\SolarExpanseMods\\ResearchLabMod\\ResearchLabMod.csproj": {}
+    "C:\\Users\\parft\\Documents\\SolarExpanseMods\\solar-expanse-research-overhaul\\src\\ResearchLabMod.csproj": {}
   },
   "projects": {
-    "C:\\Users\\parft\\Documents\\SolarExpanseMods\\ResearchLabMod\\ResearchLabMod.csproj": {
+    "C:\\Users\\parft\\Documents\\SolarExpanseMods\\solar-expanse-research-overhaul\\src\\ResearchLabMod.csproj": {
       "version": "0.1.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\parft\\Documents\\SolarExpanseMods\\ResearchLabMod\\ResearchLabMod.csproj",
+        "projectUniqueName": "C:\\Users\\parft\\Documents\\SolarExpanseMods\\solar-expanse-research-overhaul\\src\\ResearchLabMod.csproj",
         "projectName": "ResearchLabMod",
-        "projectPath": "C:\\Users\\parft\\Documents\\SolarExpanseMods\\ResearchLabMod\\ResearchLabMod.csproj",
+        "projectPath": "C:\\Users\\parft\\Documents\\SolarExpanseMods\\solar-expanse-research-overhaul\\src\\ResearchLabMod.csproj",
         "packagesPath": "C:\\Users\\parft\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\parft\\Documents\\SolarExpanseMods\\ResearchLabMod\\obj\\",
+        "outputPath": "C:\\Users\\parft\\Documents\\SolarExpanseMods\\solar-expanse-research-overhaul\\src\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\parft\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -48,6 +48,11 @@
               "target": "Package",
               "version": "[1.0.3, )",
               "autoReferenced": true
+            },
+            "YamlDotNet": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[13.7.1, )"
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420\\RuntimeIdentifierGraph.json"
