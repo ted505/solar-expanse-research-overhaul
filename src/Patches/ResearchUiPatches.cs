@@ -160,6 +160,8 @@ internal static class ResearchUiPatches
         var hasConfiguredSubTypes = entry?.ResearchSubTypes != null && entry.ResearchSubTypes.Length > 0;
         var isUniversal = (ids.Length == 0 && !hasConfiguredSubTypes && string.IsNullOrWhiteSpace(groundFacility.labData.idResearchSubType)) || Array.IndexOf(ids, "All") >= 0;
         var output = entry?.UniversalResearchPointPerMonth ?? ResearchLabMath.UniversalLabResearchPointPerMonth;
+        if (facility != null)
+            output *= facility.FinalEfficiencyBasedOnPowerDeliveryAndWorkforceAllocationAndResources * facility.Enabled;
         __result.Add(new ValueTuple<string, string>("Research output", "+" + ((float)output).ToPostfixString("{0}{1}", gray: false, intFormat: true) + " RP/month"));
         if (!isUniversal)
             __result.Add(new ValueTuple<string, string>("Research bonus", "+" + ((float)rate).ToString("0.#") + "%"));
