@@ -1,0 +1,9 @@
+C:\Users\parft\Documents\SolarExpanseMods\ResearchLabMod\obj\Debug\ResearchLabMod.csproj.AssemblyReference.cache
+C:\Users\parft\Documents\SolarExpanseMods\ResearchLabMod\obj\Debug\ResearchLabMod.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\parft\Documents\SolarExpanseMods\ResearchLabMod\obj\Debug\ResearchLabMod.AssemblyInfoInputs.cache
+C:\Users\parft\Documents\SolarExpanseMods\ResearchLabMod\obj\Debug\ResearchLabMod.AssemblyInfo.cs
+C:\Users\parft\Documents\SolarExpanseMods\ResearchLabMod\obj\Debug\ResearchLabMod.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\Solar Expanse\BepInEx\plugins\ResearchLabMod\ResearchLabMod.dll
+C:\Program Files (x86)\Steam\steamapps\common\Solar Expanse\BepInEx\plugins\ResearchLabMod\ResearchLabMod.pdb
+C:\Users\parft\Documents\SolarExpanseMods\ResearchLabMod\obj\Debug\ResearchLabMod.dll
+C:\Users\parft\Documents\SolarExpanseMods\ResearchLabMod\obj\Debug\ResearchLabMod.pdb
