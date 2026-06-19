@@ -28,7 +28,7 @@ internal sealed class ResearchCategoryConfig
 internal sealed class ResearchConfig
 {
     public double? BaseResearchPointPerMonth { get; set; }
-    public double UniversalLabResearchPointPerMonth { get; set; } = 100.0;
+    public double UniversalLabResearchPointPerMonth { get; set; } = 20.0;
     public double ResearchBonusDiminishingStartPercent { get; set; } = 50.0;
     public double ResearchBonusSoftCapPercent { get; set; } = 100.0;
 
@@ -155,6 +155,9 @@ internal sealed class ResearchConfig
     {
         return new Dictionary<string, FacilityResearchEntry>(StringComparer.Ordinal)
         {
+            { "build_lab", new FacilityResearchEntry { UniversalResearchPointPerMonth = 20.0 } },
+            { "rf_research_institute", new FacilityResearchEntry { UniversalResearchPointPerMonth = 120.0 } },
+            { "rf_research_complex", new FacilityResearchEntry { UniversalResearchPointPerMonth = 1000.0 } },
             { "rf_life_science_facility", new FacilityResearchEntry { BlockOnEarth = true } },
             { "rf_industrial_research_facility", new FacilityResearchEntry { BlockOnEarth = true } },
             { "rf_spaceflight_research_facility", new FacilityResearchEntry { BlockOnEarth = true } },

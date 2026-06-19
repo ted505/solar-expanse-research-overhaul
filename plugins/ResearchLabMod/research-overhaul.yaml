@@ -18,7 +18,7 @@
 # global universalLabResearchPointPerMonth for flat output.
 
 baseResearchPointPerMonth:
-universalLabResearchPointPerMonth: 100
+universalLabResearchPointPerMonth: 20
 
 researchBonusDiminishingStartPercent: 50
 researchBonusSoftCapPercent: 100
@@ -59,6 +59,16 @@ categories:
       - SubBranch_Power
 
 facilities:
+
+  # Raw research throughput facilities
+  build_lab:
+    universalResearchPointPerMonth: 20
+
+  rf_research_institute:
+    universalResearchPointPerMonth: 120
+
+  rf_research_complex:
+    universalResearchPointPerMonth: 1000
 
   # Specialized research facilities
   rf_life_science_facility:
