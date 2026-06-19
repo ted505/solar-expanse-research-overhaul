@@ -59,8 +59,8 @@ internal sealed class ResearchRateOverlay : MonoBehaviour
         rootRt.anchorMin = new Vector2(0.5f, 1f);
         rootRt.anchorMax = new Vector2(0.5f, 1f);
         rootRt.pivot = new Vector2(0.5f, 1f);
-        rootRt.anchoredPosition = new Vector2(-510f, -44f);
-        rootRt.sizeDelta = new Vector2(660f, 52f);
+        rootRt.anchoredPosition = new Vector2(-565f, -28f);
+        rootRt.sizeDelta = new Vector2(540f, 44f);
 
         var bg = root.GetComponent<Image>();
         bg.color = new Color(0f, 0.08f, 0.075f, 0.82f);
@@ -71,8 +71,8 @@ internal sealed class ResearchRateOverlay : MonoBehaviour
         var labelRt = labelGo.GetComponent<RectTransform>();
         labelRt.anchorMin = Vector2.zero;
         labelRt.anchorMax = Vector2.one;
-        labelRt.offsetMin = new Vector2(10f, 5f);
-        labelRt.offsetMax = new Vector2(-10f, -5f);
+        labelRt.offsetMin = new Vector2(8f, 4f);
+        labelRt.offsetMax = new Vector2(-8f, -4f);
 
         _label = labelGo.GetComponent<TextMeshProUGUI>();
         _label.raycastTarget = false;
