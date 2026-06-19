@@ -56,14 +56,14 @@ internal sealed class ResearchRateOverlay : MonoBehaviour
         root.transform.SetParent(transform, false);
 
         var rootRt = root.GetComponent<RectTransform>();
-        rootRt.anchorMin = new Vector2(0f, 0f);
-        rootRt.anchorMax = new Vector2(0f, 0f);
-        rootRt.pivot = new Vector2(0f, 0f);
-        rootRt.anchoredPosition = new Vector2(8f, 42f);
-        rootRt.sizeDelta = new Vector2(156f, 188f);
+        rootRt.anchorMin = new Vector2(0.5f, 1f);
+        rootRt.anchorMax = new Vector2(0.5f, 1f);
+        rootRt.pivot = new Vector2(0.5f, 1f);
+        rootRt.anchoredPosition = new Vector2(-510f, -44f);
+        rootRt.sizeDelta = new Vector2(660f, 52f);
 
         var bg = root.GetComponent<Image>();
-        bg.color = new Color(0f, 0.12f, 0.11f, 0.62f);
+        bg.color = new Color(0f, 0.08f, 0.075f, 0.82f);
         bg.raycastTarget = false;
 
         var labelGo = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
@@ -71,16 +71,16 @@ internal sealed class ResearchRateOverlay : MonoBehaviour
         var labelRt = labelGo.GetComponent<RectTransform>();
         labelRt.anchorMin = Vector2.zero;
         labelRt.anchorMax = Vector2.one;
-        labelRt.offsetMin = new Vector2(8f, 7f);
-        labelRt.offsetMax = new Vector2(-8f, -7f);
+        labelRt.offsetMin = new Vector2(10f, 5f);
+        labelRt.offsetMax = new Vector2(-10f, -5f);
 
         _label = labelGo.GetComponent<TextMeshProUGUI>();
         _label.raycastTarget = false;
-        _label.enableWordWrapping = true;
-        _label.overflowMode = TextOverflowModes.Overflow;
-        _label.alignment = TextAlignmentOptions.TopLeft;
-        _label.fontSize = 11.5f;
-        _label.lineSpacing = -10f;
+        _label.enableWordWrapping = false;
+        _label.overflowMode = TextOverflowModes.Ellipsis;
+        _label.alignment = TextAlignmentOptions.MidlineLeft;
+        _label.fontSize = 10.5f;
+        _label.lineSpacing = -20f;
         _label.color = new Color32(0, 255, 224, 255);
 
         var donor = GetComponentInChildren<TextMeshProUGUI>(true);
@@ -118,12 +118,10 @@ internal sealed class ResearchRateOverlay : MonoBehaviour
     private static string BuildCategoryText(ResearchManager researchManager, ResearchDefinition selected)
     {
         var currentCategory = ResearchLabMath.GetResearchCategory(selected);
-        var text = "<b>RESEARCH RATE</b>\n";
-        text += "Base " + ResearchLabMath.FormatPointsPerHour(ResearchLabMath.GetBaseResearchPointPerHour(researchManager)) + "\n";
-        text += "Universal " + ResearchLabMath.FormatPointsPerHour(ResearchLabMath.GetSharedResearchPointPerHour(researchManager));
-        var universalLabs = ResearchLabMath.GetUniversalLabResearchPointPerHour(researchManager);
-        if (universalLabs > 0f)
-            text += " <color=#9FEFE6>+" + ResearchLabMath.FormatPointsPerHour(universalLabs) + "</color>";
+        var text = "<b>RATE</b> ";
+        text += "Base " + ResearchLabMath.FormatPointsPerHour(ResearchLabMath.GetBaseResearchPointPerHour(researchManager));
+        text += "  |  Labs " + ResearchLabMath.FormatPointsPerHour(ResearchLabMath.GetUniversalLabResearchPointPerHour(researchManager));
+        text += "  |  Total " + ResearchLabMath.FormatPointsPerHour(ResearchLabMath.GetSharedResearchPointPerHour(researchManager));
         text += "\n";
 
         foreach (var category in ResearchLabMath.ResearchCategories)
@@ -136,9 +134,8 @@ internal sealed class ResearchRateOverlay : MonoBehaviour
                 ? ResearchLabMath.GetRawResearchBonusPercent(researchManager, selected)
                 : ResearchLabMath.GetRawCategoryBonusPercent(researchManager, category);
             var marker = isCurrentCategory ? "> " : "";
-            var label = isCurrentCategory && selected != null ? category.Name + " selected" : category.Name;
-            text += "<color=#" + category.HexColor + ">" + marker + label + "</color>\n";
-            text += "  <color=#9FEFE6>" + ResearchLabMath.FormatPercentBonus(effectiveBonus, rawBonus) + "</color>\n";
+            text += "  <color=#" + category.HexColor + ">" + marker + category.Name + "</color> ";
+            text += "<color=#9FEFE6>" + ResearchLabMath.FormatPercentBonus(effectiveBonus, rawBonus) + "</color>";
         }
 
         return text;
